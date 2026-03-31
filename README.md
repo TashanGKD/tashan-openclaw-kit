@@ -4,6 +4,23 @@
 
 这个仓库的目标不是替代 OpenClaw 官方仓库，而是提供一套“能直接跑、能直接改、能继续演化”的团队起点。
 
+## If Another OpenClaw Opens This Repo
+
+如果另一个 OpenClaw / agent 直接看到这个文件夹，推荐先按这个顺序读：
+
+1. `AGENTS.md`
+2. `README.md`
+3. `docs/agent-onboarding.md`
+4. `config/openclaw.json`
+5. `workspace/AGENTS.md`、`workspace/TOOLS.md`、`workspace/MEMORY.md`
+6. `workspace/skills/*/SKILL.md`
+
+核心原则是：
+
+- 必须让主智能体和子智能体都共享的规则，放在 `workspace/AGENTS.md` 和 `workspace/TOOLS.md`
+- 详细工作流放在 `workspace/skills/`
+- 运行开关和工具可见性放在 `config/openclaw.json`
+
 ## Quick Start
 
 ### Prerequisites
@@ -53,25 +70,41 @@ docker compose up -d openclaw-gateway
 
 默认不会覆盖你已经存在的同名文件。
 
+如果模板已经更新，想把模板里的新版配置和 workspace 覆盖同步到本机：
+
+```bash
+./scripts/bootstrap-local.sh --force
+```
+
+默认仍然不会覆盖你已有的 `.env`；只有在你明确需要时，才用：
+
+```bash
+./scripts/bootstrap-local.sh --force-env
+```
+
 ## Common Commands
 
 | Command | Purpose |
 |---|---|
 | `./scripts/bootstrap-docker.sh` | 初始化运行态并启动 Docker 版 OpenClaw |
 | `./scripts/bootstrap-local.sh` | 把模板同步到本机 `~/.openclaw/` |
+| `./scripts/bootstrap-local.sh --force` | 用模板刷新本机 `openclaw.json` 与 `workspace/` |
 | `make logs` | 查看 Gateway 日志 |
 | `make dashboard` | 生成 dashboard token 访问入口 |
 | `make health` | 运行 OpenClaw health 检查 |
 | `make down` | 停止容器 |
 | `make check` | 校验仓库结构与运行态准备情况 |
+| `./scripts/check.sh --repo-only` | 只校验仓库模板本身，不要求本地运行态已存在 |
 
 ## Directory Structure
 
 ```text
 .
+├── AGENTS.md
 ├── config/
 │   └── openclaw.json
 ├── docs/
+│   ├── agent-onboarding.md
 │   └── tooling-notes.md
 ├── scripts/
 │   ├── bootstrap-docker.sh
@@ -81,6 +114,7 @@ docker compose up -d openclaw-gateway
 ├── workspace/
 │   ├── AGENTS.md
 │   ├── TOOLS.md
+│   ├── TOOLS-CONFIG.md
 │   ├── MEMORY.md
 │   ├── memory/
 │   └── skills/
@@ -99,9 +133,12 @@ docker compose up -d openclaw-gateway
 | Document | Path | Purpose |
 |---|---|---|
 | README | `README.md` | 仓库入口说明与部署方法 |
+| Repo agent entry | `AGENTS.md` | 给其他 OpenClaw / agent 的仓库入口说明 |
+| Agent onboarding | `docs/agent-onboarding.md` | 说明先看什么、哪些规范必须共享、如何同步 |
 | Gateway config | `config/openclaw.json` | OpenClaw 默认配置模板 |
 | Core rules | `workspace/AGENTS.md` | 很短的核心 system prompt 补充规则 |
 | Tool routing | `workspace/TOOLS.md` | 工具选型与调用顺序说明 |
+| Tool/prompt contract | `workspace/TOOLS-CONFIG.md` | 主子智能体共享规范与配置边界说明 |
 | Long-term memory seed | `workspace/MEMORY.md` | 长期记忆模板与写入边界 |
 | Read/write skill | `workspace/skills/read-write-workflow/SKILL.md` | 文件读写工作流规范 |
 | Memory skill | `workspace/skills/memory-read-write/SKILL.md` | 记忆读写工作流规范 |
@@ -128,10 +165,12 @@ docker compose up -d openclaw-gateway
 ## What Is Included
 
 - 一份可直接落到 `~/.openclaw/openclaw.json` 的默认配置模板
+- 一份给其他 OpenClaw / agent 的仓库入口说明
 - 一份很短的核心 system prompt 补充规则
 - 一份“读写工作流” skill
 - 一份“记忆读写” skill
 - 一份默认工具路由说明
+- 一份主子智能体共享规范说明
 - 一套 Docker 一键启动脚本
 - 一份后续增强路线说明
 

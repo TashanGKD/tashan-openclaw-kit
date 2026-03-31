@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: prepare up down logs dashboard health check
+.PHONY: prepare up down logs dashboard health check check-repo sync-local refresh-local
 
 prepare:
 	./scripts/prepare-state.sh
@@ -22,3 +22,12 @@ health: prepare
 
 check:
 	./scripts/check.sh
+
+check-repo:
+	./scripts/check.sh --repo-only
+
+sync-local:
+	./scripts/bootstrap-local.sh
+
+refresh-local:
+	./scripts/bootstrap-local.sh --force
